@@ -1708,8 +1708,6 @@ bool CSafeSocket::readBlock(StringBuffer &ret, unsigned timeout, HttpHelper *pHt
             char header[MAX_HTTP_HEADERSIZE + 1]; // allow room for \0
             sock->read(header, 1, MAX_HTTP_HEADERSIZE, bytesRead, timeout);
             header[bytesRead] = 0;
-            DBGLOG("F5Test POST %s", (const char *)header);
-
             char *payload = strstr(header, "\r\n\r\n");
             if (payload)
             {
@@ -1758,22 +1756,17 @@ bool CSafeSocket::readBlock(StringBuffer &ret, unsigned timeout, HttpHelper *pHt
                 char headerline[MAX_HTTP_GET_LINE + 1];
                 Owned<IBufferedSocket> linereader = createBufferedSocket(sock);
 
-                StringBuffer f5test;
                 int bytesread = readHttpHeaderLine(linereader, headerline, MAX_HTTP_GET_LINE);
-                f5test.append(headerline);
                 pHttpHelper->parseHTTPRequestLine(headerline);
 
                 bytesread = readHttpHeaderLine(linereader, headerline, MAX_HTTP_GET_LINE);
-                f5test.append(headerline);
                 while(bytesread >= 0 && *headerline && *headerline!='\r')
                 {
                     // capture authentication token
                     if (!strnicmp(headerline, "Authorization: Basic ", 21))
                         pHttpHelper->setAuthToken(headerline+21);
                     bytesread = readHttpHeaderLine(linereader, headerline, MAX_HTTP_GET_LINE);
-                    f5test.append(headerline);
                 }
-                DBGLOG("f5test GET %s", f5test.str());
 
                 pHttpHelper->checkTarget();
                 const char *query = pHttpHelper->queryQueryName();
@@ -1782,14 +1775,10 @@ bool CSafeSocket::readBlock(StringBuffer &ret, unsigned timeout, HttpHelper *pHt
                 return true;
         }
         else if (strnicmp((char *)&len, "STAT", 4) == 0)
-        {
-            DBGLOG("f5test STAT");
             isStatus = true;
-        }
         else
         {
             _WINREV(len);
-            DBGLOG("f5test len %x", len);
             if (len & 0x80000000)
             {
                 len ^= 0x80000000;
@@ -1807,12 +1796,11 @@ bool CSafeSocket::readBlock(StringBuffer &ret, unsigned timeout, HttpHelper *pHt
         {
             sock->read(buf + (len - left), left, left, bytesRead, timeout);
         }
-        DBGLOG("f5test read %s", ret.str());
+
         return len != 0;
     }
     catch (IException *E)
     {
-        DBGLOG(E, "f5 exception");
         if (pHttpHelper)
             checkSendHttpException(*pHttpHelper, E, NULL);
         heartbeat = false;
@@ -1820,7 +1808,6 @@ bool CSafeSocket::readBlock(StringBuffer &ret, unsigned timeout, HttpHelper *pHt
     }
     catch (...)
     {
-        DBGLOG("f5 unknown exception");
         heartbeat = false;
         throw;
     }
