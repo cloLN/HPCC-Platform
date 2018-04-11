@@ -42,6 +42,7 @@ define([
     "hpcc/TargetSelectWidget",
     "hpcc/FilterDropDownWidget",
     "src/Utility",
+    "src/ws_account",
 
     "dojo/text!../templates/WUQueryWidget.html",
 
@@ -63,7 +64,7 @@ define([
 ], function (declare, lang, i18n, nlsHPCC, arrayUtil, dom, domForm, date, on, topic, aspect,
                 registry, Menu, MenuItem, MenuSeparator, PopupMenuItem,
                 selector,
-                _TabContainerWidget, WsWorkunits, ESPUtil, ESPWorkunit, DelayLoadWidget, TargetSelectWidget, FilterDropDownWidget, Utility,
+                _TabContainerWidget, WsWorkunits, ESPUtil, ESPWorkunit, DelayLoadWidget, TargetSelectWidget, FilterDropDownWidget, Utility, WsAccount,
                 template) {
     return declare("WUQueryWidget", [_TabContainerWidget, ESPUtil.FormHelper], {
         templateString: template,
@@ -75,6 +76,7 @@ define([
         filter: null,
         clusterTargetSelect: null,
         stateSelect: null,
+        userName: null,
 
         postCreate: function (args) {
             this.inherited(arguments);
@@ -274,6 +276,16 @@ define([
             return retVal;
         },
 
+        _onMine: function  (event) {
+            if (event) {
+                this.filter.setValue(this.id + "Owner", this.userName);
+                this.filter._onFilterApply();
+            } else {
+                this.filter._onFilterClear();
+                this.filter._onFilterApply();
+            }
+        },
+
         //  Implementation  ---
         init: function (params) {
             if (this.inherited(arguments))
@@ -317,6 +329,13 @@ define([
             ESPUtil.MonitorVisibility(this.workunitsTab, function (visibility) {
                 if (visibility) {
                     context.refreshGrid();
+                }
+            });
+
+            WsAccount.MyAccount({
+            }).then(function (response) {
+                if (lang.exists("MyAccountResponse.username", response)) {
+                    context.userName = response.MyAccountResponse.username;
                 }
             });
         },

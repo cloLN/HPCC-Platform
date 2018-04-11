@@ -54,6 +54,7 @@ define([
     "hpcc/SelectionGridWidget",
     "src/WsTopology",
     "src/Utility",
+    "src/ws_account",
 
     "put-selector/put",
 
@@ -82,7 +83,7 @@ define([
 ], function (declare, lang, i18n, nlsHPCC, arrayUtil, dom, domAttr, domConstruct, domClass, domForm, date, on, topic,
                 registry, Dialog, Menu, MenuItem, MenuSeparator, PopupMenuItem, Textarea, ValidationTextBox,
                 editor, selector, tree,
-                _TabContainerWidget, WsDfu, FileSpray, ESPUtil, ESPLogicalFile, ESPDFUWorkunit, DelayLoadWidget, TargetSelectWidget, TargetComboBoxWidget, FilterDropDownWidget, SelectionGridWidget, WsTopology, Utility,
+                _TabContainerWidget, WsDfu, FileSpray, ESPUtil, ESPLogicalFile, ESPDFUWorkunit, DelayLoadWidget, TargetSelectWidget, TargetComboBoxWidget, FilterDropDownWidget, SelectionGridWidget, WsTopology, Utility, WsAccount,
                 put,
                 template) {
     return declare("DFUQueryWidget", [_TabContainerWidget, ESPUtil.FormHelper], {
@@ -91,6 +92,7 @@ define([
         i18n: nlsHPCC,
         pathSepCharG: "/",
         updatedFilter: null,
+        username: null,
 
         postCreate: function (args) {
             this.inherited(arguments);
@@ -206,6 +208,17 @@ define([
             this.treeMode = this.widget.Tree.get("checked");
             this.refreshGrid();
             this.refreshActionState();
+        },
+
+
+        _onMine: function (event) {
+            if (event) {
+                this.filter.setValue(this.id + "Owner", this.userName);
+                this.filter._onFilterApply();
+            } else {
+                this.filter._onFilterClear();
+                this.filter._onFilterApply();
+            }
         },
 
         _onOpen: function (event) {
@@ -447,6 +460,27 @@ define([
             });
             topic.subscribe("hpcc/dfu_wu_completed", function (topic) {
                 context.refreshGrid();
+            });
+
+            WsDfu.DFUQuery({
+                request: {}
+            }).then(function (response) {
+                if (lang.exists("DFUQueryResponse.Warning", response)) {
+                    if (response.DFUQueryResponse.Warning) {
+                        dojo.publish("hpcc/brToaster", {
+                            Severity: "Error",
+                            Source: "WsDfu.DFUQuery",
+                            Exceptions: [{ Source: context.i18n.TooManyFiles, Message: context.i18n.TheReturnedResults + ": " + response.DFUQueryResponse.NumFiles + ", " + context.i18n.RepresentsASubset }]
+                        });
+                    }
+                }
+            });
+
+            WsAccount.MyAccount({
+            }).then(function (response) {
+                if (lang.exists("MyAccountResponse.username", response)) {
+                    context.userName = response.MyAccountResponse.username;
+                }
             });
 
             this.createNewSuperRadio.on('change', function (value) {

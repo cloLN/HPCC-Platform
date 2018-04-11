@@ -43,6 +43,7 @@ define([
     "hpcc/TargetSelectWidget",
     "hpcc/FilterDropDownWidget",
     "src/Utility",
+    "src/ws_account",
 
     "dojo/text!../templates/GetDFUWorkunitsWidget.html",
 
@@ -63,7 +64,7 @@ define([
 ], function (declare, lang, i18n, nlsHPCC, arrayUtil,dom, domClass, domForm, date, on, topic,
                 registry, Dialog, Menu, MenuItem, MenuSeparator, PopupMenuItem,
                 selector,
-                _TabContainerWidget, ESPUtil, ESPDFUWorkunit, FileSpray, DelayLoadWidget, TargetSelectWidget, FilterDropDownWidget, Utility,
+                _TabContainerWidget, ESPUtil, ESPDFUWorkunit, FileSpray, DelayLoadWidget, TargetSelectWidget, FilterDropDownWidget, Utility, WsAccount,
                 template) {
     return declare("GetDFUWorkunitsWidget", [_TabContainerWidget], {
         templateString: template,
@@ -75,6 +76,7 @@ define([
         filter: null,
         clusterTargetSelect: null,
         stateTargetSelect: null,
+        username: null,
 
         postCreate: function (args) {
             this.inherited(arguments);
@@ -97,6 +99,16 @@ define([
             this._idleWatcherHandle = this._idleWatcher.on("idle", function () {
                 context._onRefresh();
             });
+        },
+
+        _onMine: function (event) {
+            if (event) {
+                this.filter.setValue(this.id + "Owner", this.userName);
+                this.filter._onFilterApply();
+            } else {
+                this.filter._onFilterClear();
+                this.filter._onFilterApply();
+            }
         },
 
         _onDownloadToListCancelDialog: function (event){
@@ -250,6 +262,13 @@ define([
             ESPUtil.MonitorVisibility(this.workunitsTab, function (visibility) {
                 if (visibility) {
                     context.refreshGrid();
+                }
+            });
+
+            WsAccount.MyAccount({
+            }).then(function (response) {
+                if (lang.exists("MyAccountResponse.username", response)) {
+                    context.userName = response.MyAccountResponse.username;
                 }
             });
         },
