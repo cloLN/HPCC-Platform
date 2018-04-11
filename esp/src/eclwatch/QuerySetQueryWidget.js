@@ -39,7 +39,11 @@ define([
     "src/ESPUtil",
     "src/Utility",
 <<<<<<< HEAD
+<<<<<<< HEAD
     "hpcc/SelectionGridWidget",
+=======
+    "src/ws_account",
+>>>>>>> 5eee601... HPCC-17130 Mine button to return owner results
 =======
     "src/ws_account",
 >>>>>>> 5eee601... HPCC-17130 Mine button to return owner results
@@ -66,7 +70,11 @@ define([
                 registry, Menu, MenuItem, MenuSeparator, PopupMenuItem,
                 selector,
 <<<<<<< HEAD
+<<<<<<< HEAD
                 _TabContainerWidget, DelayLoadWidget, WsWorkunits, ESPQuery, ESPUtil, Utility, SelectionGridWidget,
+=======
+                _TabContainerWidget, DelayLoadWidget, WsWorkunits, ESPQuery, ESPUtil, Utility, WsAccount,
+>>>>>>> 5eee601... HPCC-17130 Mine button to return owner results
 =======
                 _TabContainerWidget, DelayLoadWidget, WsWorkunits, ESPQuery, ESPUtil, Utility, WsAccount,
 >>>>>>> 5eee601... HPCC-17130 Mine button to return owner results
