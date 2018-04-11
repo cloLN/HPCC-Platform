@@ -1,0 +1,56 @@
+{
+  "name": "hpcc-viz",
+  "version": "1.10.2",
+  "description": "HPCC Visualization Framework",
+  "keywords": [
+    "Visualization",
+    "BigData",
+    "HPCC",
+    "Chart",
+    "Graph"
+  ],
+  "main": [
+    "dist/hpcc-viz.min.css",
+    "dist/hpcc-viz-common.min.js",
+    "dist/hpcc-viz-api.min.js",
+    "dist/hpcc-viz-layout.min.js",
+    "dist/hpcc-viz-other.min.js",
+    "dist/hpcc-viz-form.min.js",
+    "dist/hpcc-viz-graph.min.js",
+    "dist/hpcc-viz-tree.min.js",
+    "dist/hpcc-viz-chart.min.js",
+    "dist/hpcc-viz-amchart.min.js",
+    "dist/hpcc-viz-c3chart.min.js",
+    "dist/hpcc-viz-google.min.js",
+    "dist/hpcc-viz-map.min.js",
+    "dist/hpcc-viz-marshaller.min.js"
+  ],
+  "ignore": [
+    "apps",
+    "demos",
+    "src",
+    ".*",
+    "gulpfile.js",
+    "rjs.noop.js",
+    "package.json"
+  ],
+  "dependencies": {
+    "c3": "~0.4.10",
+    "colorbrewer": "~1.0.0",
+    "d3": "~3.5.6",
+    "font-awesome": "~4.4.0",
+    "topojson": "~1.6.19",
+    "dagre": "https://raw.githubusercontent.com/cpettitt/dagre/v0.7.3/dist/dagre.js",
+    "d3-cloud": "~1.2.1",
+    "amcharts3": "~3.18.0",
+    "simpleheat": "https://raw.githubusercontent.com/mourner/simpleheat/v0.3.0/simpleheat.js",
+    "es6-promise": "~3.0.2"
+  },
+  "resolutions": {
+    "d3": "~3.5.6"
+  },
+  "license": "Apache",
+  "authors": [
+    "HPCC Systems"
+  ]
+}
