@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>HPCC Systems - Visualization Framework</title>
+    <link rel="stylesheet" href="test.css">
+    <script src="http://rawgit.com/jrburke/requirejs/2.1.17/require.js"></script>
+    <script src="../src/config.js"></script>
+    <script>
+        require.config({
+            baseUrl: ".",
+            paths: {
+                "src": "../src",
+                "test": "../test"
+            }
+        });
+    </script>
+
+    <!--  Uncomment to develop
+    <script src="../bower_components/requirejs/require.js"></script>
+    <script src="../src/config.js"></script>
+    -->
+    <!--  Uncomment to test build
+    <script src="../dist-amd/hpcc-viz.js"></script>
+    <script src="../dist-amd/hpcc-bundles.js"></script>
+    <script>
+        require.config({
+            paths: {
+                "src": "../dist-amd",
+                "font-awesome": "../dist-amd/font-awesome/css/font-awesome.min",
+                "amchartsImg": "../dist-amd/img/amcharts/"
+            }
+        });
+    </script>
+    -->
+</head>
+<body>
+    <div class="wrapper">
+        <header>
+            <h1>Visualization Framework</h1>
+            <p>The goal of the visualization framework is to simplify the construction of visualizations and dashboards for Big Data on the HPCC Platform.</p>
+            <ul>
+                <li><a href="https://github.com/hpcc-systems/Visualization/zipball/master">Download <strong>ZIP File</strong></a></li>
+                <li><a href="https://github.com/hpcc-systems/Visualization/tarball/master">Download <strong>TAR Ball</strong></a></li>
+                <li><a href="https://github.com/hpcc-systems/Visualization">View On <strong>GitHub</strong></a></li>
+            </ul>
+        </header>
+        <section id="section">
+        </section>
+        <footer>
+            <p>This project is maintained by <a href="https://github.com/hpcc-systems">HPCC Systems</a></p>
+        </footer>
+    </div>
+    <script src="test.js"></script>
+    <script>
+        doTest();
+    </script>
+</body>
+</html>
