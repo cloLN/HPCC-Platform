@@ -581,13 +581,6 @@ bool EspHttpBinding::hasSubService(IEspContext &context, const char *name)
     return false;
 }
 
-
-void EspHttpBinding::setRequestPath(const char *path)
-{
-    m_reqPath.clear();
-    m_reqPath.append(path);
-}
-
 bool EspHttpBinding::rootAuthRequired()
 {
     if(!m_authmap.get())
@@ -1374,7 +1367,7 @@ int EspHttpBinding::onGetJsonBuilder(IEspContext &context, CHttpRequest* request
     const char* excludes[] = {"json_builder_",NULL};
     getEspUrlParams(context,params,excludes);
 
-    StringBuffer header("Content-Type: application/json; charset=UTF-8");
+    StringBuffer header("Content-Type: application/json");
 
     Owned<IXslProcessor> xslp = getXslProcessor();
     Owned<IXslTransform> xform = xslp->createXslTransform();

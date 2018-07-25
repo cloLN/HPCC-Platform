@@ -140,7 +140,7 @@ int CHttpSoapBinding::onSoapRequest(CHttpRequest* request, CHttpResponse* respon
             mex->serializeJSON(msgbuf, 0, true, true, true);
         }
         SetHTTPErrorStatus(errcode, response);
-        response->setContentType(HTTP_TYPE_APPLICATION_JSON_UTF8);
+        response->setContentType(HTTP_TYPE_JSON);
         response->setContent(msgbuf.str());
     }
     else
@@ -212,10 +212,6 @@ int CHttpSoapBinding::HandleSoapRequest(CHttpRequest* request, CHttpResponse* re
         soaprequest->setHttpReq(request);
         soapresponse->setHttpResp(response);
     }
-
-    StringBuffer reqPath;
-    request->getPath(reqPath);
-    setRequestPath(reqPath.str());
 
     soapservice->processRequest(*soaprequest.get(), *soapresponse.get());
 
@@ -308,7 +304,7 @@ void CSoapComplexType::appendContent(IEspContext* ctx, MemoryBuffer& buffer, Str
         content.append('}');
         if (jsonp && *jsonp)
             content.append(");");
-        mimetype.set("application/json; charset=UTF-8");
+        mimetype.set("application/json");
     }
     else
     {
@@ -332,7 +328,7 @@ void CSoapComplexType::appendContent(IEspContext* ctx, StringBuffer& buffer, Str
         buffer.append('}');
         if (jsonp && *jsonp)
             buffer.append(");");
-        mimetype.set("application/json; charset=UTF-8");
+        mimetype.set("application/json");
     }
     else
     {
