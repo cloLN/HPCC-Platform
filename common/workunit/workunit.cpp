@@ -6332,14 +6332,14 @@ void CLocalWorkUnit::setDebugAgentListenerIP(const char * ip)
 IStringVal& CLocalWorkUnit::getSecurityToken(IStringVal &str) const
 {
     CriticalBlock block(crit);
-    str.set(p->queryProp("@token"));
+//    str.set(p->queryProp("@token"));
     return str;
 }
 
 void CLocalWorkUnit::setSecurityToken(const char *value)
 {
     CriticalBlock block(crit);
-    p->setProp("@token", value);
+//    p->setProp("@token", value);
 }
 
 bool CLocalWorkUnit::getRunningGraph(IStringVal &graphName, WUGraphIDType &subId) const
