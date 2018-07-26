@@ -11412,7 +11412,7 @@ extern WORKUNIT_API void submitWorkUnit(const char *wuid, const char *username, 
     assertex(workunit);
 
     SCMStringBuffer token;
-    createToken(wuid, username, password, token);
+    createToken(wuid, username, nullptr, token);
     workunit->setSecurityToken(token.str());
     StringAttr clusterName(workunit->queryClusterName());
     if (!clusterName.length()) 
@@ -12131,7 +12131,7 @@ extern WORKUNIT_API bool getWorkUnitCreateTime(const char *wuid,CDateTime &time)
 extern WORKUNIT_API IStringVal& createToken(const char *wuid, const char *user, const char *password, IStringVal &str)
 {
     StringBuffer wu, token("X");
-    wu.append(wuid).append(';').append(user).append(';').append(password);
+    wu.append(wuid).append(';').append(user).append(';');
     encrypt(token,wu.str());
     str.set(token.str());
     return str;

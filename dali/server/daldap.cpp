@@ -145,7 +145,7 @@ public:
 
         Owned<ISecUser> user = ldapsecurity->createUser(username);
         user->credentials().setPassword(password);
-
+/*
         bool authenticated = false;
 
         //Check that the digital signature provided by the caller (signature of
@@ -197,7 +197,7 @@ public:
             ERRLOG("LDAP: getPermissions(%s) scope=%s user=%s fails LDAP authentication",key?key:"NULL",obj?obj:"NULL",username.str());
             return SecAccess_None;//deny
         }
-
+*/
         bool filescope = stricmp(key,"Scope")==0;
         bool wuscope = stricmp(key,"workunit")==0;
 

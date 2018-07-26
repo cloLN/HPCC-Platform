@@ -3278,7 +3278,7 @@ void WsWuHelpers::copyWsWorkunit(IEspContext &context, IWorkUnit &wu, const char
     queryExtendedWU(&wu)->copyWorkUnit(src, false, false);
 
     SCMStringBuffer token;
-    wu.setSecurityToken(createToken(wu.queryWuid(), context.queryUserId(), context.queryPassword(), token).str());
+    wu.setSecurityToken(createToken(wu.queryWuid(), context.queryUserId(), nullptr, token).str());
     wu.commit();
 }
 
