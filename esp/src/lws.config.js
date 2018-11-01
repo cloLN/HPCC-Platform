@@ -1,10 +1,12 @@
-const debugServerIP = "192.168.99.103";
+const debugServerIP = "10.173.160.101";
 const debugHPCC_JS = false; //  Should never be TRUE in a PR  ---
 
 let rewrite = [
     { from: "/esp/files/Login.html", to: "http://" + debugServerIP + ":8010/esp/files/Login.html" },
     { from: "/esp/files/GetUserName.html", to: "http://" + debugServerIP + ":8010/esp/files/GetUserName.html" },
     { from: "/esp/login", to: "http://" + debugServerIP + ":8010/esp/login" },
+    { from: "/esp/logout", to: "http://" + debugServerIP + ":8010/esp/logout" },
+    { from: "/esp/lock", to: "http://" + debugServerIP + ":8010/esp/lock" },
     { from: "/esp/getauthtype", to: "http://" + debugServerIP + ":8010/esp/getauthtype" },
     { from: "/esp/files/esp/getauthtype", to: "http://" + debugServerIP + ":8010/esp/getauthtype" },
     { from: "/esp/files/esp/lock", to: "http://" + debugServerIP + ":8010/esp/lock" },

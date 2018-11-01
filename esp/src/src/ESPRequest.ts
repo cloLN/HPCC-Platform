@@ -46,8 +46,12 @@ class RequestHelper {
         return this.serverIP ? true : false;
     }
 
+    isAuthenticated() {
+        return cookie("ESPAuthenticated") === "true";
+    }
+
     isLocked() {
-        return cookie("Status") !== "login_attempt" && cookie("Status") === "Locked";
+        return cookie("Status") === "Locked";
     }
 
     _send(service, action, _params) {
@@ -70,10 +74,6 @@ class RequestHelper {
             postfix = ".json";
         }
         // var method = params.method ? params.method : "get";
-
-        if (this.isLocked()) {
-            throw new Error("session locked");
-        }
 
         var retVal = null;
         if (this.isCrossSite()) {
@@ -105,6 +105,19 @@ class RequestHelper {
     }
 
     send(service, action, params?) {
+        if (!this.isAuthenticated()) {
+            window.location.reload(true);
+        }
+
+        if (this.isLocked()) {
+            topic.publish("hpcc/brToaster", {
+                Severity: "Error",
+                Source: service + "." + action,
+                Exceptions: [{ Message: "<h3>Session is Locked<h3>" }]
+            });
+            return Promise.resolve({});
+        }
+
         if (!params)
             params = {};
 
