@@ -2907,7 +2907,8 @@ private:
                 eps.append(buddyNode);
             }
             localCluster.setown(createIGroup(eps));
-            localClusterName.set(cluster);
+            StringBuffer clusterName;
+            localClusterName.set(eps.getText(clusterName));
         }
         else
         {
