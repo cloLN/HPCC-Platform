@@ -116,6 +116,9 @@ private:
     int m_numRequests = 0;
     SocketEndpoint m_ep;
 
+    Linked<CTxSummary> m_txSummary;
+    StringBuffer m_txSummaryPrefix;
+
     virtual int connect(StringBuffer& errmsg, bool forceNewConnection);
     void close();
 
@@ -123,6 +126,8 @@ private:
     HttpClientErrCode sendRequest(IProperties *headers, const char* method, const char* contenttype, StringBuffer& request, StringBuffer& response, StringBuffer& responseStatus, bool alwaysReadContent, bool forceNewConnection);
     HttpClientErrCode proxyRequest(IHttpMessage *request, IHttpMessage *response,  bool forceNewConnection);
     HttpClientErrCode postRequest(ISoapMessage &req, ISoapMessage& resp, bool forceNewConnection);
+
+    StringBuffer txSummaryName(const char* token) const;
 
 public:
     IMPLEMENT_IINTERFACE;
@@ -147,6 +152,8 @@ public:
     virtual void setConnectTimeOutMs(unsigned timeout) override;
     virtual void setTimeOut(unsigned int timeout);
     virtual void setPersistentHandler(IPersistentHandler* handler) { m_persistentHandler = handler; }
+
+    void setTxSummary(CTxSummary* txSummary, const char* prefix = nullptr) override;
 };
 
 #endif

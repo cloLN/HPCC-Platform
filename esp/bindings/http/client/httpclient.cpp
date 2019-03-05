@@ -32,6 +32,7 @@
 #include "bindutil.hpp"
 #include "espplugin.ipp"
 #include "SOAP/Platform/soapmessage.hpp"
+#include "txsummary.hpp"
 
 /*************************************************************************
      CHttpClient Implementation
@@ -105,7 +106,7 @@ IHttpClient* CHttpClientContext::createHttpClient(const char* proxy, const char*
     {
         ReadLockBlock rblock(m_rwlock);
         StringBuffer host, protocol, user, passwd, port, path;
-        Utils::SplitURL(url, protocol, user, passwd, host, port, path); 
+        Utils::SplitURL(url, protocol, user, passwd, host, port, path);
         if(host.length() > 0)
         {
             ForEachItemIn(x, m_cookies)
@@ -213,6 +214,8 @@ void CHttpClient::setTimeOut(unsigned int timeout)
 
 int CHttpClient::connect(StringBuffer& errmsg, bool forceNewConnection)
 {
+    CumulativeTimer::Scope timing(m_txSummary.get() ? m_txSummary->queryTimer(txSummaryName("connect")) : nullptr);
+
     if (m_socket != nullptr)
     {
         if(m_isPersistentSocket)
@@ -339,7 +342,7 @@ HttpClientErrCode CHttpClient::sendRequest(const char* method, const char* conte
 
     httprequest.setown(new CHttpRequest(*m_socket));
     httpresponse.setown(new CHttpResponse(*m_socket));
-    
+
     httprequest->setMethod(method);
     httprequest->setVersion("HTTP/1.1");
 
@@ -354,7 +357,7 @@ HttpClientErrCode CHttpClient::sendRequest(const char* method, const char* conte
 
     httprequest->setHost(m_host.get());
     httprequest->setPort(m_port);
-    
+
     httprequest->setContentType(contenttype);
 
     if(m_userid.length() > 0)
@@ -396,11 +399,18 @@ HttpClientErrCode CHttpClient::sendRequest(const char* method, const char* conte
     }
 #endif
 
-    httprequest->send();
+    {
+        CumulativeTimer::Scope timing(m_txSummary.get() ? m_txSummary->queryTimer(txSummaryName("send")) : nullptr);
+        httprequest->send();
+    }
 
     if (m_readTimeoutSecs)
         httpresponse->setTimeOut(m_readTimeoutSecs);
-    int ret = httpresponse->receive(false, NULL);  // MORE - pass in IMultiException if we want to see exceptions (which are not fatal)
+    int ret = 0;
+    {
+        CumulativeTimer::Scope timing(m_txSummary.get() ? m_txSummary->queryTimer(txSummaryName("receive")) : nullptr);
+        ret = httpresponse->receive(false, NULL);  // MORE - pass in IMultiException if we want to see exceptions (which are not fatal)
+    }
     if (ret < 0 && m_isPersistentSocket && httpresponse->getPeerClosed())
         return HttpClientErrCode::PeerClosed;
 #ifdef COOKIE_HANDLING
@@ -538,11 +548,18 @@ HttpClientErrCode CHttpClient::proxyRequest(IHttpMessage *request, IHttpMessage 
 
     copyCookies(*httprequest, *forwardRequest, m_host);
 
-    httprequest->send();
+    {
+        CumulativeTimer::Scope timing(m_txSummary.get() ? m_txSummary->queryTimer(txSummaryName("send")) : nullptr);
+        httprequest->send();
+    }
 
     if (m_readTimeoutSecs)
         httpresponse->setTimeOut(m_readTimeoutSecs);
-    int ret = httpresponse->receive(false, nullptr);
+    int ret = 0;
+    {
+        CumulativeTimer::Scope timing(m_txSummary.get() ? m_txSummary->queryTimer(txSummaryName("receive")) : nullptr);
+        ret = httpresponse->receive(false, nullptr);
+    }
     if (ret < 0 && m_isPersistentSocket && httpresponse->getPeerClosed())
         return HttpClientErrCode::PeerClosed;
 
@@ -658,11 +675,18 @@ HttpClientErrCode CHttpClient::sendRequest(IProperties *headers, const char* met
     }
 #endif
 
-    httprequest->send();
+    {
+        CumulativeTimer::Scope timing(m_txSummary.get() ? m_txSummary->queryTimer(txSummaryName("send")) : nullptr);
+        httprequest->send();
+    }
 
     if (m_readTimeoutSecs)
         httpresponse->setTimeOut(m_readTimeoutSecs);
-    int ret = httpresponse->receive(alwaysReadContent, me);  // MORE - pass in IMultiException if we want to see exceptions (which are not fatal)
+    int ret = 0;
+    {
+        CumulativeTimer::Scope timing(m_txSummary.get() ? m_txSummary->queryTimer(txSummaryName("receive")) : nullptr);
+        ret = httpresponse->receive(alwaysReadContent, me);  // MORE - pass in IMultiException if we want to see exceptions (which are not fatal)
+    }
     if (ret < 0 && m_isPersistentSocket && httpresponse->getPeerClosed())
         return HttpClientErrCode::PeerClosed;
 
@@ -698,7 +722,7 @@ int CHttpClient::sendRequest(const char* method, const char* contenttype, String
     return sendRequest(NULL, method, contenttype, request, response, responseStatus, alwaysReadContent);
 }
 
-// since an element may have namespace specified in its tag, don't look for trailing '>' 
+// since an element may have namespace specified in its tag, don't look for trailing '>'
 // in its start tag
 static const char* getElementText(const char* str, const char* beginTag/*like '<A'*/, const char* endTag/*like '</A>'*/,
                                   int& textLen)
@@ -779,7 +803,7 @@ HttpClientErrCode CHttpClient::postRequest(ISoapMessage &req, ISoapMessage& resp
     Owned<CHttpRequest> httprequest(new CHttpRequest(*m_socket));
     Owned<CHttpResponse> httpresponse(new CHttpResponse(*m_socket));
 
-    
+
     httprequest->setMethod("POST");
     httprequest->setVersion("HTTP/1.1");
 
@@ -794,7 +818,7 @@ HttpClientErrCode CHttpClient::postRequest(ISoapMessage &req, ISoapMessage& resp
 
     httprequest->setHost(m_host.get());
     httprequest->setPort(m_port);
-    
+
     if(strlen(request.get_content_type()) > 0)
         httprequest->setContentType(request.get_content_type());
 
@@ -840,12 +864,19 @@ HttpClientErrCode CHttpClient::postRequest(ISoapMessage &req, ISoapMessage& resp
             httprequest->addCookie(LINK(cookie));
     }
 #endif
-    httprequest->send();
+    {
+        CumulativeTimer::Scope timing(m_txSummary.get() ? m_txSummary->queryTimer(txSummaryName("send")) : nullptr);
+        httprequest->send();
+    }
     Owned<IMultiException> me = MakeMultiException();
 
     if (m_readTimeoutSecs)
         httpresponse->setTimeOut(m_readTimeoutSecs);
-    int ret = httpresponse->receive(true, me);
+    int ret = 0;
+    {
+        CumulativeTimer::Scope timing(m_txSummary.get() ? m_txSummary->queryTimer(txSummaryName("receive")) : nullptr);
+        ret = httpresponse->receive(true, me);
+    }
     if (ret < 0 && m_isPersistentSocket && httpresponse->getPeerClosed())
         return HttpClientErrCode::PeerClosed;
 
@@ -885,7 +916,7 @@ HttpClientErrCode CHttpClient::postRequest(ISoapMessage &req, ISoapMessage& resp
     }
     else if(statusClass == '4')
     {
-        if(statusCode == HTTP_STATUS_UNAUTHORIZED_CODE || 
+        if(statusCode == HTTP_STATUS_UNAUTHORIZED_CODE ||
             statusCode == HTTP_STATUS_FORBIDDEN_CODE ||
             statusCode == HTTP_STATUS_NOT_ALLOWED_CODE ||
             statusCode == HTTP_STATUS_PROXY_AUTHENTICATION_REQUIRED_CODE)
@@ -949,13 +980,28 @@ HttpClientErrCode CHttpClient::postRequest(ISoapMessage &req, ISoapMessage& resp
     }
 
     response.set_text(content.str());
-            
+
     // parse soap fault
     parseSoapFault(content,errmsg.clear());
     if (errmsg.length())
         response.set_err(errmsg);
 
     return HttpClientErrCode::OK;
+}
+
+void CHttpClient::setTxSummary(CTxSummary* txSummary, const char* prefix)
+{
+    m_txSummary.set(txSummary);
+    m_txSummaryPrefix.set(prefix);
+}
+
+StringBuffer CHttpClient::txSummaryName(const char* token) const
+{
+    StringBuffer name(m_txSummaryPrefix);
+
+    if (name.length())
+        name << '-';
+    return name << "http-" << token;
 }
 
 static Owned<CHttpClientContext> theHttpClientContext;

@@ -1118,6 +1118,7 @@ void EsdlServiceImpl::sendTargetSOAP(IEspContext & context,
     Owned<IHttpClientContext> httpctx = getHttpClientContext();
     Owned <IHttpClient> httpclient = httpctx->createHttpClient(NULL, url.str());
     httpclient->setTimeOut(maxWaitSeconds);
+    httpclient->setTxSummary(context.queryTxSummary(), "call");
 
     StringBuffer password;
     if (pwc)

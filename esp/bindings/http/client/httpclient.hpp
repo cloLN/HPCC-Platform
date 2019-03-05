@@ -40,6 +40,7 @@ interface IHttpClient : extends ITransportClient
 
     virtual int postRequest(ISoapMessage & request, ISoapMessage & response) = 0;
 
+    virtual void setTxSummary(class CTxSummary* txSummary, const char* prefix = nullptr) = 0;
 };
 
 interface IHttpClientContext : extends IInterface

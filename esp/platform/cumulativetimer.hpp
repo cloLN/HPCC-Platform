@@ -63,8 +63,10 @@ public:
             : mTimer(t), mStart(0)
         {
             if (mTimer)
+            {
                 mTimer->incNesting();
-            mStart = msTick();
+                mStart = msTick();
+            }
         }
 
         ~Scope()
