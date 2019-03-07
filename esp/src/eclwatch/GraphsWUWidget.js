@@ -7,14 +7,13 @@ define([
 
     "hpcc/GraphsWidget",
     "src/ESPWorkunit",
-    "hpcc/DelayLoadWidget",
 
     "@hpcc-js/eclwatch"
 
 ], function (declare,
     ContentPane,
     selector,
-    GraphsWidget, ESPWorkunit, DelayLoadWidget,
+    GraphsWidget, ESPWorkunit,
     hpccEclWatch) {
         return declare("GraphsWUWidget", [GraphsWidget], {
             wu: null,
