@@ -1246,7 +1246,7 @@ protected:
         ASSERT(wu->queryGraphState("graph1")==WUGraphUnknown);
         ASSERT(wu->queryNodeState("graph1", 1)==WUGraphUnknown);
 
-        wu->setGraphState("graph1",WUGraphRunning);
+        wu->setGraphState("graph1",0,WUGraphRunning);
         ASSERT(wu->queryGraphState("graph1")==WUGraphRunning);
 
         wu->setNodeState("graph1", 1, WUGraphRunning);
