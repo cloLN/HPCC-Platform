@@ -1448,9 +1448,9 @@ void GraphResults::setResult(unsigned id, IHThorGraphResult * result)
 
 //---------------------------------------------------------------------------
 
-IWUGraphStats *EclGraph::updateStats(StatisticCreatorType creatorType, const char * creator, unsigned wfid, unsigned subgraph)
+IWUGraphStats *EclGraph::updateStats(StatisticCreatorType creatorType, const char * creator, unsigned activeWfid, unsigned subgraph)
 {
-    return wu->updateStats (queryGraphName(), creatorType, creator, wfid, subgraph);
+    return wu->updateStats (queryGraphName(), creatorType, creator, activeWfid, subgraph);
 }
 
 void EclGraph::updateWUStatistic(IWorkUnit *lockedwu, StatisticScopeType scopeType, const char * scope, StatisticKind kind, const char * descr, unsigned __int64 value)

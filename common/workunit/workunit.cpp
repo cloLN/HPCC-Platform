@@ -3771,11 +3771,20 @@ protected:
         VStringBuffer path("/GraphProgress/%s/%s", queryWuid(), graphName);
         Owned<IRemoteConnection> conn = querySDS().connect(path, myProcessSession(), RTM_LOCK_WRITE|RTM_CREATE_QUERY, SDS_LOCK_TIMEOUT);
         IPropertyTree * root = conn->queryRoot();
+        assertex(wfid);
 
         if (!root->hasProp("@wfid"))
+        {
             root->setPropInt("@wfid", wfid);
+        }
         else
-            assertex(root->getPropInt("@wfid", 0) == wfid); // check that wfid is passed consistently
+        {
+            //Ideally the following code would check that the wfids are passed consistently.
+            //However there is an obscure problem with out of line functions being called from multiple workflow
+            //ids, and possibly library graphs.
+            //Stats for library graphs should be nested below the library call activity
+            //assertex(root->getPropInt("@wfid", 0) == wfid); // check that wfid is passed consistently
+        }
 
         return conn.getClear();
     }
