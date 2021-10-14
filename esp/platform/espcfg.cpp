@@ -296,6 +296,10 @@ CEspConfig::CEspConfig(IProperties* inputs, IPropertyTree* envpt, IPropertyTree*
     m_options.logLevel = level ? atoi(level) : LogMin;
     m_options.logReq = readLogRequest(m_cfg->queryProp("@logRequests"));
     m_options.logResp = m_cfg->getPropBool("@logResponses", false);
+    //Write more in esp log
+    m_options.logLevel = LogMax;
+    m_options.logReq = LogRequestsAlways;
+    m_options.logResp = true;
     m_options.txSummaryLevel = m_cfg->getPropInt("@txSummaryLevel", LogMin);
     m_options.txSummaryStyle = readTxSummaryStyle(m_cfg->queryProp("@txSummaryStyle"));
     m_options.txSummaryGroup = readTxSummaryGroup(m_cfg->queryProp("@txSummaryGroup"));
